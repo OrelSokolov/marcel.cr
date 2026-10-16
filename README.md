@@ -1,25 +1,25 @@
 # marcel.cr
 
-Порт гема [marcel](https://github.com/rails/marcel) 2.1.0 (Ruby) на Crystal с API 1:1.
+A Crystal port of the [marcel](https://github.com/rails/marcel) 2.1.0 Ruby gem with a 1:1 API.
 
-Определение MIME-типа по magic-байтам, имени/расширению файла и объявленному
-типу: уточнение XML по корневому элементу и ZIP/OOXML по central directory.
-Таблицы сгенерированы из оригинального `lib/marcel/tables.rb` (Tika +
-custom.xml), поэтому результаты идентичны Ruby-гему.
+MIME type detection by magic bytes, file name/extension, and declared type:
+XML refinement by root element and ZIP/OOXML refinement by central directory.
+The tables are generated from the original `lib/marcel/tables.rb` (Tika +
+custom.xml), so results are identical to the Ruby gem.
 
-## Установка
+## Installation
 
-1. Добавьте шард в `shard.yml`:
+1. Add the shard to your `shard.yml`:
 
 ```yaml
 dependencies:
   marcel:
-    github: your-github/marcel.cr
+    github: OrelSokolov/marcel.cr
 ```
 
-2. Запустите `shards install`.
+2. Run `shards install`.
 
-## Использование
+## Usage
 
 ```crystal
 require "marcel"
@@ -28,24 +28,23 @@ Marcel::MimeType.for(Path["file.gif"])                       # => "image/gif"
 Marcel::MimeType.for(IO::Memory.new(File.read("file.docx"))) # => "application/vnd..."
 Marcel::MimeType.for(name: "file.xml")                       # => "application/xml"
 Marcel::MimeType.for(extension: "pdf")                       # => "application/pdf"
-Marcel::MimeType.for(Path["book.mov"), name: "book.m4v",
-                     declared_type: "video/mp4")             # приоритет: magic → имя → тип
+Marcel::MimeType.for(Path["book.mov"], name: "book.m4v",
+                     declared_type: "video/mp4")             # priority: magic → name → type
 ```
 
-`MimeType.for` принимает `Path` (файл), `IO` (содержимое), `String`
-(содержимое) или `nil`, плюс необязательные подсказки `name`, `extension`,
-`declared_type`. Более поздний кандидат используется, только если он более
-специфичен, чем уже найденный тип. Если тип определить не удалось, возвращается
-`application/octet-stream`.
+`MimeType.for` accepts a `Path` (a file), an `IO` (content), a `String`
+(content) or `nil`, plus optional hints: `name`, `extension`, `declared_type`.
+A later candidate is used only if it is more specific than the type already
+found. If no type can be determined, `application/octet-stream` is returned.
 
-Низкоуровневый API:
+Low-level API:
 
 ```crystal
 Marcel::Magic.by_path("image.png")    # => Marcel::Magic?
 Marcel::Magic.by_extension("png")     # => Marcel::Magic?
 Marcel::Magic.by_type("image/png")    # => Marcel::Magic?
-Marcel::Magic.by_magic(io)            # медленно: анализ содержимого
-Marcel::Magic.all_by_magic(io)        # все совпавшие типы
+Marcel::Magic.by_magic(io)            # slow: content analysis
+Marcel::Magic.all_by_magic(io)        # all matching types
 
 magic = Marcel::Magic.new("text/html")
 magic.text?   # => true
@@ -53,7 +52,7 @@ magic.image?  # => false
 magic.extensions
 magic.child_of?("text/plain")
 
-# Расширение реестра (мутации глобальны, как в Ruby-геме):
+# Extending the registry (mutations are global, as in the Ruby gem):
 Marcel::Magic.add("application/x-my-thing", extensions: "mtg",
                   parents: "application/json")
 Marcel::Magic.remove("application/x-my-thing")
@@ -61,32 +60,33 @@ Marcel::Magic.canonicalize("application/x-my-thing", "text/x-my-thing")
 Marcel::MimeType.extend("application/x-my-thing", extensions: %w(mtg))
 ```
 
-## Отличия от Ruby-версии
+## Differences from the Ruby version
 
-- `Path` вместо `Pathname`; `String`-аргумент трактуется как содержимое, не путь.
-- Регэкспы magic-правил исполняются на PCRE2 (всегда UTF-режим), а не Onigmo
-  с флагом `/n`; семантика байтов воспроизведена (см. `src/marcel/magic/xml.cr`).
-- Не-UTF-8 кодировки XML-документов транскодируются через iconv.
+- `Path` instead of `Pathname`; a `String` argument is treated as content, not a path.
+- Magic rule regexes run on PCRE2 (always in UTF mode) instead of Onigmo with
+  the `/n` flag; the byte semantics are reproduced (see `src/marcel/magic/xml.cr`).
+- Non-UTF-8 XML document encodings are transcoded via iconv.
 
-## Разработка
+## Development
 
 ```
-crystal spec                # порт тестового набора гема (639 примеров)
-                            # + кросс-чек с оракулом (525 примеров)
+crystal spec                # port of the gem's test suite (639 examples)
+                            # + oracle cross-check (525 examples)
 ```
 
-Кросс-чек сравнивает порт с эталонными ответами Ruby-гема
-(`spec/oracle_expected.yml`). Для регенерации эталона нужен системный Ruby:
+The cross-check compares the port against reference answers from the Ruby gem
+(`spec/oracle_expected.yml`). Regenerating the reference requires a system
+Ruby:
 
 ```
 ruby script/generate_oracle_expected.rb
 ```
 
-`script/generate_tables.rb` перегенерирует `src/marcel/tables.cr` из
-оракул-гема (обычно не нужен — таблицы уже сгенерированы).
+`script/generate_tables.rb` regenerates `src/marcel/tables.cr` from the
+oracle gem (usually not needed — the tables are already generated).
 
-## Лицензия
+## License
 
-Как и оригинальный гем — MIT и Apache-2.0. Порт включает код marcel
-(Copyright © Tom Ward и участники проекта) и mimemagic (Copyright © 2011
+Same as the original gem — MIT and Apache-2.0. This port includes code from
+marcel (Copyright © Tom Ward and contributors) and mimemagic (Copyright © 2011
 Daniel Mendler, MIT).
