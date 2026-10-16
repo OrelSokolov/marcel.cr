@@ -1,5 +1,5 @@
 require "spec"
-require "../src/marcel"
+require "../src/marcel_cr"
 
 # Reverse mapping from canonical type to its aliases. Only needed for testing.
 module Marcel

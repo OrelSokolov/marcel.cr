@@ -11,7 +11,7 @@ require "pathname"
 
 LIB = File.expand_path("../oracle/marcel-2.1.0/lib", __dir__)
 $LOAD_PATH.unshift(LIB)
-require "marcel"
+require "marcel_cr"
 
 FIXTURES = File.expand_path("../spec/fixtures", __dir__)
 ROOT = File.expand_path("..", __dir__)
