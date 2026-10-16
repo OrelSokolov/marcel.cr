@@ -1,0 +1,13 @@
+name: marcel_cr
+version: 2.1.0
+crystal: ">= 1.21.0"
+description: |
+  Порт гема marcel 2.1.0 (github.com/rails/marcel) на Crystal — 1:1 API.
+  Определение MIME-типа по magic-байтам, имени/расширению файла и
+  объявленному типу: Marcel::MimeType.for, Marcel::Magic (add/remove/
+  canonicalize), уточнение XML по корневому элементу и ZIP/OOXML по
+  central directory. Таблицы сгенерированы из оригинального
+  lib/marcel/tables.rb (Tika + custom.xml).
+
+authors:
+  - oleg

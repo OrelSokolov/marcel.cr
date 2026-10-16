@@ -1,0 +1,6 @@
+/lib/
+/bin/
+/.shards/
+*.d
+.marcel_cr*
+oracle/
